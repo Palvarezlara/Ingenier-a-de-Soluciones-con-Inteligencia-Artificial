@@ -102,7 +102,7 @@ class HierarchicalPlanner(Planner):
             level_steps = self._create_level_steps(sub_goals, level)
             steps.extend(level_steps)
         
-        plan = Plan(goal=goal, steps=steps)
+        plan = Plan(goal=goal, steps=steps, created_at=None )
         self.plans.append(plan)
         return plan
     
@@ -183,7 +183,7 @@ class ReactivePlanner(Planner):
             )
         ]
         
-        plan = Plan(goal=goal, steps=steps)
+        plan = Plan(goal=goal, steps=steps, created_at= None)
         self.plans.append(plan)
         return plan
     
@@ -232,7 +232,7 @@ class GoalOrientedPlanner(Planner):
         # Algoritmo de planificación hacia atrás
         steps = self._backward_planning(goal, context)
         
-        plan = Plan(goal=goal, steps=steps)
+        plan = Plan(goal=goal, steps=steps, created_at= None)
         self.plans.append(plan)
         return plan
     
