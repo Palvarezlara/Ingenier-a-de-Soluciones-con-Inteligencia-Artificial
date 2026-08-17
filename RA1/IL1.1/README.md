@@ -29,15 +29,15 @@ Al completar esta unidad, serás capaz de:
 
 Este módulo está compuesto por cuatro cuadernos de Jupyter que te guiarán progresivamente desde una conexión básica hasta la creación de un chatbot con memoria.
 
-### Notebook 1: Conexión Directa con GitHub Models API (`1-github_model_api.ipynb`)
-Este cuaderno es el punto de partida. Aprenderás a realizar llamadas directas a un modelo de lenguaje utilizando la API de GitHub Models y el cliente de OpenAI.
+### Notebook 1: Conexión Directa a la API (`1-github_model_api.ipynb`)
+Este cuaderno es el punto de partida. Aprenderás a realizar llamadas directas a un modelo de lenguaje utilizando el cliente de OpenAI apuntado a Groq (que expone una API compatible con OpenAI).
 - **Qué aprenderás**:
     - Configurar las variables de entorno y el cliente de `openai`.
     - Realizar una llamada básica `chat.completions.create`.
     - Usar parámetros clave como `model`, `messages`, `temperature` y `max_tokens`.
     - Aplicar el rol `system` para guiar el comportamiento del modelo.
 - **Cómo usarlo**:
-    1. Asegúrate de tener las variables de entorno `GITHUB_BASE_URL` y `GITHUB_TOKEN` configuradas.
+    1. Asegúrate de tener las variables de entorno `LLM_BASE_URL` y `LLM_API_KEY` configuradas.
     2. Instala la dependencia `openai`.
     3. Ejecuta las celdas secuencialmente para ver cómo se establece la conexión y se interactúa con el modelo.
 
@@ -82,16 +82,19 @@ Un LLM no tiene estado. Este cuaderno enseña cómo darle "memoria" para que pue
 
 ### Variables de Entorno Requeridas
 
+Copia `.env.example` a `.env` en la raíz del repo y completa:
+
 ```bash
-export GITHUB_BASE_URL="https://models.inference.ai.azure.com"
-export GITHUB_TOKEN="tu_token_de_github"
-export OPENAI_BASE_URL="https://models.inference.ai.azure.com"
+LLM_BASE_URL="https://api.groq.com/openai/v1"   # Groq, API compatible con OpenAI
+LLM_API_KEY="gsk_..."                            # https://console.groq.com/keys
 ```
+
+Los notebooks cargan el `.env` automáticamente (y en Google Colab leen el panel 🔑 **Secrets**).
 
 ### Dependencias
 
 ```bash
-pip install openai langchain langchain-openai
+pip install -r requirements.txt
 ```
 
 ## Arquitectura Técnica
@@ -103,8 +106,8 @@ pip install openai langchain langchain-openai
 from openai import OpenAI
 
 client = OpenAI(
-    base_url=os.environ.get("GITHUB_BASE_URL"),
-    api_key=os.environ.get("GITHUB_TOKEN")
+    base_url=os.environ.get("LLM_BASE_URL"),
+    api_key=os.environ.get("LLM_API_KEY")
 )
 ```
 
@@ -115,9 +118,9 @@ client = OpenAI(
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(
-    base_url=os.getenv("OPENAI_BASE_URL"),
-    api_key=os.getenv("GITHUB_TOKEN"),
-    model="gpt-4o"
+    base_url=os.getenv("LLM_BASE_URL"),
+    api_key=os.getenv("LLM_API_KEY"),
+    model="llama-3.3-70b-versatile"
 )
 ```
 

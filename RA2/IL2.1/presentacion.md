@@ -78,7 +78,7 @@ result = agent.run("¿Quién fue Marie Curie?")
 ```
 
 **Configuración Específica para GitHub Models API**:
-LangChain espera variables estándar (`OPENAI_API_KEY`, `OPENAI_API_BASE`) que se mapean automáticamente desde las variables de GitHub Models (`GITHUB_TOKEN`, `OPENAI_BASE_URL`).
+CrewAI no usa LangChain: por debajo usa LiteLLM, con su propia clase `LLM`, a la que hay que pasarle explícitamente `model`, `base_url` y `api_key`.
 
 ## 4. CrewAI: Orquestación de Equipos de Agentes
 
@@ -131,7 +131,11 @@ crew = Crew(
 ```python
 # SOLUCIÓN: Mapear variables de entorno
 os.environ["OPENAI_API_BASE"] = os.environ.get("OPENAI_BASE_URL", "")
-os.environ["OPENAI_API_KEY"] = os.environ.get("GITHUB_TOKEN", "")
+llm = LLM(
+    model="openai/" + os.getenv("LLM_MODEL", "llama-3.3-70b-versatile"),
+    base_url=os.getenv("LLM_BASE_URL"),
+    api_key=os.getenv("LLM_API_KEY"),
+)
 ```
 
 **Errores comunes corregidos**:
@@ -164,18 +168,28 @@ os.environ["OPENAI_API_KEY"] = os.environ.get("GITHUB_TOKEN", "")
 
 **Variables de entorno requeridas**:
 ```bash
-export OPENAI_BASE_URL="https://models.inference.ai.azure.com"
-export GITHUB_TOKEN="tu_token_de_github"
+LLM_BASE_URL="https://api.groq.com/openai/v1"
+LLM_API_KEY="tu_key"
+LLM_MODEL="llama-3.3-70b-versatile"
 ```
 
 **Patrón de mapeo para compatibilidad**:
 ```python
 # Para LangChain directo
-llm = ChatOpenAI(model="gpt-4o", temperature=0)
+llm = ChatOpenAI(
+    base_url=os.getenv("LLM_BASE_URL"),
+    api_key=os.getenv("LLM_API_KEY"),
+    model=os.getenv("LLM_MODEL", "llama-3.3-70b-versatile"),
+    temperature=0,
+)
 
 # Para CrewAI (requiere mapeo)
 os.environ["OPENAI_API_BASE"] = os.environ.get("OPENAI_BASE_URL", "")
-os.environ["OPENAI_API_KEY"] = os.environ.get("GITHUB_TOKEN", "")
+llm = LLM(
+    model="openai/" + os.getenv("LLM_MODEL", "llama-3.3-70b-versatile"),
+    base_url=os.getenv("LLM_BASE_URL"),
+    api_key=os.getenv("LLM_API_KEY"),
+)
 ```
 
 ## 6. Actividad Práctica y Próximos Pasos

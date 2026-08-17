@@ -4,13 +4,24 @@ IL2.3: Planificación Básica con LangChain
 Ejemplo de cómo un agente LangChain puede planificar y ejecutar pasos simples usando una herramienta.
 """
 
-# Requiere: pip install langchain openai
-from langchain_openai import ChatOpenAI
-from langchain_classic.agents import initialize_agent, Tool, AgentType
+# Requiere: pip install -r requirements.txt (desde la raíz del repo)
 import os
 
-# Configura tu API key de OpenAI
-os.environ["GITHUB_TOKEN"] = os.environ.get("GITHUB_TOKEN")
+from dotenv import load_dotenv
+load_dotenv()                      # lee LLM_BASE_URL / LLM_API_KEY / LLM_MODEL del .env
+
+# LangChain v1: langchain.agents.create_agent (o langgraph)
+from langchain_classic.agents import initialize_agent, Tool, AgentType
+from langchain_openai import ChatOpenAI
+
+# El proveedor se configura por entorno; nunca escribas la key en el código.
+llm = ChatOpenAI(
+    base_url=os.getenv("LLM_BASE_URL"),
+    api_key=os.getenv("LLM_API_KEY"),
+    model=os.getenv("LLM_MODEL", "llama-3.3-70b-versatile"),
+    temperature=0,
+)
+
 
 # Herramienta personalizada: pasos para preparar café
 def pasos_cafe(_):
@@ -22,13 +33,6 @@ herramienta_cafe = Tool(
     description="Devuelve los pasos para preparar café."
 )
 
-# Inicializa el LLM y el agente
-llm = ChatOpenAI(
-    model="openai/gpt-4o-mini",
-    api_key=os.environ.get("GITHUB_TOKEN"),
-    base_url="https://models.github.ai/inference",
-    temperature=0
-)
 agente = initialize_agent(
     tools=[herramienta_cafe],
     llm=llm,
